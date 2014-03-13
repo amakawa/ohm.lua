@@ -1,0 +1,3 @@
+resp 31bf5e0408f122ee4f8ae4c21c07804564a55382 https://raw.github.com/soveran/resp/1.0.0/resp.lua
+save d84093efbb10df1c5995c6b0e7340520973b306d https://raw.github.com/soveran/ohm-scripts/1.0.1/save.lua
+delete 55e478dd20bb68caae3eb6e27a9164f6d9f9fff6 https://raw.github.com/soveran/ohm-scripts/1.0.1/delete.lua
