@@ -26,7 +26,7 @@ return ohm.model("User", {
     }
 })
 
--- using it:
+-- using it: (e.g. in app.lua)
 
 local user = require("models/user.lua")
 local resp = require("resp")
