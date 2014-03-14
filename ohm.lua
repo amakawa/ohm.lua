@@ -3,7 +3,7 @@ local msgpack = require("cmsgpack")
 local SAVE = "lib/save-d84093e.lua"
 local DELETE = "lib/delete-55e478d.lua"
 
--- @utility auxiliary functions 
+-- @utility auxiliary functions
 local util = {}
 
 local extract_attribs = function(self, attributes)
