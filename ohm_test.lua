@@ -2,10 +2,10 @@ local resp = require("lib/resp-31bf5e0")
 local user = require("examples/user")
 
 local attributes = {
-    email = "john@example.org",
-    fname = "John",
-    lname = "Doe",
-    full_name = "John Doe",
+	email = "john@example.org",
+	fname = "John",
+	lname = "Doe",
+	full_name = "John Doe",
 }
 
 local db = resp.new("localhost", 6379)
@@ -51,11 +51,11 @@ assert(err.attr == "email")
 
 -- case 3: updating an existing entry
 attributes = {
-    id = "1",
-    fname = "Jane",
-    lname = "Cruz",
-    full_name = "Jane Cruz",
-    email = "jane@example.org",
+	id = "1",
+	fname = "Jane",
+	lname = "Cruz",
+	full_name = "Jane Cruz",
+	email = "jane@example.org",
 }
 
 assert("1" == user:save(db, attributes))
