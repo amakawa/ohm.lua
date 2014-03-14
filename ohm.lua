@@ -3,7 +3,7 @@ local msgpack = require("cmsgpack")
 local SAVE = "lib/save-d84093e.lua"
 local DELETE = "lib/delete-55e478d.lua"
 
--- @utility auxiliary functions 
+-- @utility auxiliary functions
 local util = {}
 
 local extract_attribs = function(self, attributes)
@@ -13,8 +13,8 @@ local extract_attribs = function(self, attributes)
 		local val = attributes[att]
 
 		if val and val ~= "" then
-            res[#res+1] = att
-            res[#res+1] = val
+			res[#res+1] = att
+			res[#res+1] = val
 		end
 	end
 
@@ -22,23 +22,23 @@ local extract_attribs = function(self, attributes)
 end
 
 local extract_indices = function(self, attributes)
-    local res = {}
+	local res = {}
 
-    for _, attr in ipairs(self.indices) do
-        res[attr] = util.array(attributes[attr])
-    end
+	for _, attr in ipairs(self.indices) do
+		res[attr] = util.array(attributes[attr])
+	end
 
-    return res
+	return res
 end
 
 local extract_uniques = function(self, attributes)
-    local res = {}
+	local res = {}
 
-    for _, attr in ipairs(self.uniques) do
-        res[attr] = attributes[attr]
-    end
+	for _, attr in ipairs(self.uniques) do
+		res[attr] = attributes[attr]
+	end
 
-    return res
+	return res
 end
 
 local save = function(self, db, attributes)
@@ -64,10 +64,10 @@ local save = function(self, db, attributes)
 	local attr = string.match(response, "UniqueIndexViolation: (%w+)")
 
 	if attr then
-        local err = {
-            code = "UniqueIndexViolation",
-            attr = attr
-        }
+		local err = {
+			code = "UniqueIndexViolation",
+			attr = attr
+		}
 
 		return nil, err
 	end
@@ -97,7 +97,7 @@ util.array = function(value)
 		local res = {}
 
 		for _, v in ipairs(value) do
-            res[#res+1] = v
+			res[#res+1] = v
 		end
 
 		return res
