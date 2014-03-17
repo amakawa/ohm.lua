@@ -41,6 +41,9 @@ local extract_uniques = function(self, attributes)
 	return res
 end
 
+-- regex matcher for unique index violation error in lua proc
+local UNIQUE_INDEX_VIOLATION = "UniqueIndexViolation: (%w+)"
+
 local save = function(self, db, attributes)
 	local features = {
 		name = self.name
@@ -61,16 +64,33 @@ local save = function(self, db, attributes)
 		msgpack.pack(uniques)
 	)
 
-	local attr = string.match(response, "UniqueIndexViolation: (%w+)")
+	local attr = string.match(response, UNIQUE_INDEX_VIOLATION)
 
 	if attr then
-		local err = {
-			code = "UniqueIndexViolation",
-			attr = attr
-		}
-
-		return nil, err
+		return nil, { code = "UniqueIndexViolation", attr = attr }
 	end
+
+	return response
+end
+
+local delete = function(self, db, attributes)
+	local features = {
+		name = self.name
+	}
+
+	if attributes.id then
+		features.id = attributes.id
+		features.key = self.name .. ':' .. attributes.id
+	end
+
+	local uniques = extract_uniques(self, attributes)
+	local tracked = self.tracked
+
+	local response = util.script(db, DELETE, "0",
+		msgpack.pack(features),
+		msgpack.pack(uniques),
+		msgpack.pack(tracked)
+	)
 
 	return response
 end
@@ -121,7 +141,8 @@ util.script = function(db, file, ...)
 end
 
 local methods = {
-	save = save
+	save = save,
+	delete = delete
 }
 
 local model = function(name, schema)
@@ -130,9 +151,10 @@ local model = function(name, schema)
 	setmetatable(self, {__index = methods})
 
 	self.name = name
-	self.attributes = schema.attributes
-	self.indices = schema.indices
-	self.uniques = schema.uniques
+	self.attributes = schema.attributes or {}
+	self.indices = schema.indices or {}
+	self.uniques = schema.uniques or {}
+	self.tracked = schema.tracked or {}
 
 	return self
 end

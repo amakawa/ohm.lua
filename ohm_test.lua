@@ -87,5 +87,18 @@ local all = db:call("SMEMBERS", "User:all")
 assert(#all == 1)
 assert(all[1] == "1")
 
+-- case 4: delete an entry
+
+-- this key will be purged together with the model since
+-- it's tracked
+db:call("SET", "User:1:notes", "some notes for user")
+
+local id = user:delete(db, attributes)
+assert("1" == id)
+
+keys = db:call("KEYS", "*") -- only User:id remains at this point
+assert(#keys == 1)
+assert(keys[1] == "User:id")
+
 -- We've won ;-)
 print("All tests passed.")
