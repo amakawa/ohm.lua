@@ -13,5 +13,9 @@ return ohm.model("User", {
 
 	uniques = {
 		"email"
+	},
+
+	tracked = {
+		"notes"
 	}
 })
