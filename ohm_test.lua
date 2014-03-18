@@ -100,5 +100,35 @@ keys = db:call("KEYS", "*") -- only User:id remains at this point
 assert(#keys == 1)
 assert(keys[1] == "User:id")
 
+-- case 5: finding records via index
+attributes.full_name = {"Jane Cruz", "JaneC"}
+
+local id = assert(user:save(db, attributes))
+
+local set = user:find(db, {full_name={"Jane Cruz", "JaneC"}})
+local u = set[1]
+
+assert(1 == #set)
+assert(u.id == "1")
+assert(u.email == "jane@example.org")
+assert(u.fname == "Jane")
+assert(u.lname == "Cruz")
+
+-- case 6: finding records via unique
+local u = user:with(db, "email", "jane@example.org")
+
+assert(u)
+assert(u.id == "1")
+assert(u.email == "jane@example.org")
+assert(u.fname == "Jane")
+assert(u.lname == "Cruz")
+
+-- case 7: finding records via fetch
+local u = user:fetch(db, "1")
+assert(u.id == "1")
+assert(u.email == "jane@example.org")
+assert(u.fname == "Jane")
+assert(u.lname == "Cruz")
+
 -- We've won ;-)
 print("All tests passed.")

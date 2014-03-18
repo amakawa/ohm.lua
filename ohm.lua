@@ -95,6 +95,54 @@ local delete = function(self, db, attributes)
 	return response
 end
 
+local to_index = function(self, field, value)
+	return string.format("%s:indices:%s:%s", self.name, field, value)
+end
+
+local to_indices = function(self, field, value)
+	if type(value) == "table" then
+		return util.map(value, function(_, val)
+			return to_index(self, field, val)
+		end)
+	else
+		return { to_index(self, field, value) }
+	end
+end
+
+local fetch = function(self, db, id)
+	local key = self.name .. ":" .. id
+
+	local values = db:call("HMGET", key, unpack(self.attributes))
+	local record = util.zip(self.attributes, values)
+
+	record.id = id
+
+	return record
+end
+
+local find = function(self, db, filters)
+	local keys = {}
+
+	for k, v in pairs(filters) do
+		util.map(to_indices(self, k, v), function(_, filter)
+			return filter
+		end, keys)
+	end
+
+	local ids = db:call("SINTER", unpack(keys))
+
+	return util.map(ids, function(_, id)
+		return fetch(self, db, id)
+	end)
+end
+
+local with = function(self, db, att, val)
+	local key = string.format("%s:uniques:%s", self.name, att)
+	local id = db:call("HGET", key, val)
+
+	return id and fetch(self, db, id)
+end
+
 util.read_file = function(file)
 	local f = assert(io.open(file, "r"))
 	local o = f:read("*all")
@@ -140,9 +188,32 @@ util.script = function(db, file, ...)
 	return db:call("EVALSHA", sha, ...)
 end
 
+util.zip = function(list1, list2)
+	local result = {}
+
+	for i, v in ipairs(list1) do
+		result[v] = list2[i]
+	end
+
+	return result
+end
+
+util.map = function(list, fn, result)
+	result = result or {}
+
+	for i,v in ipairs(list) do
+		result[#result+1] = fn(i, v)
+	end
+
+	return result
+end
+
 local methods = {
 	save = save,
-	delete = delete
+	delete = delete,
+	find = find,
+	with = with,
+	fetch = fetch
 }
 
 local model = function(name, schema)
