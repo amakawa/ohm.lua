@@ -130,5 +130,13 @@ assert(u.email == "jane@example.org")
 assert(u.fname == "Jane")
 assert(u.lname == "Cruz")
 
+-- case 8: saving a model with nothing but attributes
+local comment = require("examples/comment")
+
+local attributes = {name="John", body="Hola Mundo"}
+local id = assert(comment:save(db, attributes))
+
+assert(comment:fetch(db, id))
+
 -- We've won ;-)
 print("All tests passed.")
