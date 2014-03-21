@@ -1,4 +1,4 @@
-local resp = require("lib/resp-31bf5e0")
+local resp = require("lib/resp-6e21869")
 local user = require("examples/user")
 
 local attributes = {
